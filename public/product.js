@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch('/config')
         .then(response => response.json())
         .then(config => {
+            console.log('Config fetched:', config);
             currentConfig = config;
             const apiKey = config.apiKey;
             const baseId = config.baseId;
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
+                console.log('Data fetched:', data);
                 const products = data.records;
                 const container = document.getElementById('product-list');
                 container.innerHTML = '';
@@ -93,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function showModal(record) {
         currentRecord = record;
+        console.log('Showing modal for record:', record);
         form.innerHTML = ''; // Clear existing form fields
         recordIdField.value = record.id; // Set record ID
 
@@ -110,12 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     img.style.maxWidth = '100px';
                     img.style.margin = '10px';
                     form.appendChild(img);
-
-                    const magnifierIcon = document.createElement('span');
-                    magnifierIcon.className = 'magnifier-icon';
-                    magnifierIcon.innerHTML = '🔍';
-                    magnifierIcon.onclick = () => showZoomModal(photo.url);
-                    img.appendChild(magnifierIcon);
                 });
 
                 const photoInput = document.createElement('input');
@@ -143,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     editButton.onclick = function() {
-        const data = { fields: {} };
+        const data = { id: recordIdField.value, fields: {} }; // Include the ID in the update data
 
         const formData = new FormData(form);
         formData.forEach((value, key) => {
@@ -157,14 +154,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 data.fields[key] = photos;
             } else {
-                data.fields[key] = key === 'Quantity' || key === 'Price' ? parseFloat(value) : value;
+                data.fields[key] = key === 'Bio' ? (value === 'true') : key === 'Quantity' || key === 'Price' ? parseFloat(value) : value;
             }
         });
 
-        const recordId = recordIdField.value; // Get record ID from hidden field
-        console.log('Data to be sent:', JSON.stringify(data)); // Add log
+        console.log('Data to be sent:', JSON.stringify({ records: [data] })); // Add log
 
-        updateRecord(currentConfig, recordId, data).then(() => {
+        updateRecord(currentConfig, data).then(() => {
             modal.style.display = 'none';
             window.dispatchEvent(new Event('refreshRecords')); // Trigger custom event to refresh records
         });
@@ -175,20 +171,25 @@ document.addEventListener('DOMContentLoaded', function() {
         zoomModal.style.display = 'block';
     }
 
-    function updateRecord(config, id, data) {
+    function updateRecord(config, data) {
         const { apiKey, baseId, tableName } = config;
         const url = `https://api.airtable.com/v0/${baseId}/${tableName}`;
+        console.log('Updating record at URL:', url);
+        console.log('Update data:', data);
         return fetch(url, {
             method: 'PATCH',
             headers: {
                 Authorization: `Bearer ${apiKey}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ records: [{ id, fields: data.fields }] })
+            body: JSON.stringify({ records: [data] })
         })
         .then(response => {
             if (!response.ok) {
-                return response.json().then(err => { throw err; });
+                return response.json().then(err => {
+                    console.error('Error response:', err);
+                    throw err;
+                });
             }
             return response.json();
         })
