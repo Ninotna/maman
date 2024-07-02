@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Airtable CRUD</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<h1>Liste des Produits Alimentaires</h1>
+    <button id="add-product">Ajouter un produit</button>
+	<div id="data-container"></div>
+	
+
+	<!-- Modal -->
+	<div id="modal" class="modal">
+		<div class="modal-content">
+			<span class="close">&times;</span>
+			<h2>Éditer le produit</h2>
+			<form id="edit-form">
+				<input type="hidden" id="record-id">
+				<!-- Dynamic fields will be appended here -->
+			</form>
+		</div>
+	</div>
+
+	<script type="module" src="main.js"></script>
+</body>
+</html>
+

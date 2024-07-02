@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Produits Alimentaires</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Liste des Produits Alimentaires</h1>
+    <div id="product-list"></div>
+
+    <!-- Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Détails du produit</h2>
+            <form id="product-form">
+                <input type="hidden" id="record-id">
+                <!-- Dynamic fields will be appended here -->
+            </form>
+            <button id="edit-button">Modifier</button>
+        </div>
+    </div>
+
+    <!-- Zoom Modal -->
+    <div id="zoom-modal" class="zoom-modal">
+        <span class="zoom-close">&times;</span>
+        <img class="zoom-content" id="zoomed-image">
+    </div>
+
+    <script src="./product.js"></script>
+</body>
+</html>
